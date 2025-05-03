@@ -1,0 +1,41 @@
+name: Code Review
+
+on:
+  pull_request:
+    branches: [main]
+  
+jobs:
+  check_code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Run Python
+        run: |
+          python -m pip install pylint
+
+      - name : Look For Changes
+        id: files_changed
+        run: |
+          FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '.py$')
+          echo "Changed files: $FILES"
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Check Code
+        run: |
+          pylint_output=$(pylint ${{ steps.files_changed.outputs.files }} || true)
+          echo "$pylint_output"
+          echo "$pylint_output" > pylint_output.txt
+
+      - name: Update Pull Request Description
+        run: |
+          gh pr edit ${{ github.event.number }} --body "$(cat pylint_output.txt)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
