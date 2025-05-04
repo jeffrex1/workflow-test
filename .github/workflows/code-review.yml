@@ -25,7 +25,8 @@ jobs:
       - name : Look For Changes
         id: files_changed
         run: |
-          FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep '.py$')
+          MERGE_BASE=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+          FILES=$(git diff --name-only $MERGE_BASE ${{ github.sha }} | grep '.py$')
           echo "Changed files: $FILES"
           echo "files=$FILES" >> $GITHUB_OUTPUT
 
