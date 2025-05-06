@@ -45,7 +45,7 @@ jobs:
           done
           echo "LLM review complete. Output saved to llm_review_output.txt"
         env:
-          API_KEY_REQUIRED_IF_EXECUTING_OUTSIDE_NGC: ${{ secrets.LLM_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.LLM_API_KEY }}
 
       - name: Update Pull Request Description
         if: success() || failure() # Update even if the LLM review had issues
