@@ -6,7 +6,6 @@ file_content = sys.stdin.read()
 
 client = OpenAI(
   base_url = "https://integrate.api.nvidia.com/v1",
-  api_key = "${{ secrets.LLM_API_KEY }}"
 )
 
 completion = client.chat.completions.create(
