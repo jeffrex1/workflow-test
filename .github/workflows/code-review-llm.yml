@@ -29,20 +29,20 @@ jobs:
         id: files_changed
         run: |
           MERGE_BASE=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
-          FILES=$(git diff --name-only $MERGE_BASE ${{ github.sha }} | grep '.py$')
-          echo "Changed files: $FILES"
-          echo "files=$FILES" >> $GITHUB_OUTPUT
+          git diff --name-only "$MERGE_BASE" "${{ github.sha }}" -- '*.py' > changed_files.txt
+          echo "Changed files:"
+          cat changed_files.txt
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          cat changed_files.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Run LLM Code Review
         id: llm_review
         run: |
-          LLM_OUTPUT=""
-          for file in ${{ steps.files_changed.outputs.files }}; do
+          echo "${{ steps.files_changed.outputs.files }}" | while IFS= read -r file; do
             echo "--- Reviewing file: $file ---" >> llm_review_output.txt
-            file_content=$(cat "$file")
-            echo "$file_content" | python llm.py >> llm_review_output.txt
-            echo "" >> llm_review_output.txt # Add a newline between file reviews
-          done
+            cat "$file" | python llm_review.py >> llm_review_output.txt
+            echo "" >> llm_review_output.txt # Add a newline between reviews
           echo "LLM review complete. Output saved to llm_review_output.txt"
         env:
           OPENAI_API_KEY: ${{ secrets.LLM_API_KEY }}
