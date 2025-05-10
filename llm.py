@@ -14,7 +14,7 @@ completion = client.chat.completions.create(
   temperature=0.6,
   top_p=0.7,
   max_tokens=4096,
-  stream=True
+  stream=False
 )
 
 print(completion.choices[0].message)
