@@ -53,8 +53,9 @@ jobs:
         run: |
           PR_BODY=$(gh pr view ${{ github.event.number }} --json body --jq .body)
           LLM_REVIEW_CONTENT=$(cat llm_output.txt)
-          NEW_PR_BODY="${PR_BODY}\n\n## LLM Code Review Results\n\n\`\`\`\n${LLM_REVIEW_CONTENT}\n\`\`\`"
-          echo "$NEW_PR_BODY" > updated_pr_body.txt
+          LLM_REVIEW_CONTENT=$(echo "$LLM_REVIEW_CONTENT" | awk '/Original code:/ {found=1} found') # Filter content starting from "Original code:" - remove or edit this when modifying the prompt. 
+          PR_BODY="${PR_BODY}\n\n## LLM Code Review Results\n\n\`\`\`\n${LLM_REVIEW_CONTENT_}\n\`\`\`"
+          echo "$PR_BODY" > updated_pr_body.txt
           gh pr edit ${{ github.event.number }} --body-file updated_pr_body.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
