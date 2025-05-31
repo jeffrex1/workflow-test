@@ -29,7 +29,7 @@ jobs:
         id: files_changed
         run: |
           MERGE_BASE=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
-          git diff --name-only "$MERGE_BASE" "${{ github.sha }}" -- '*.py' > changed_files.txt
+          git diff --name-only "$MERGE_BASE" "${{ github.sha }}" -- '*.py' -- '*.js' -- '*.ts' > changed_files.txt
           echo "Changed files:"
           cat changed_files.txt
           echo "files<<EOF" >> $GITHUB_OUTPUT
