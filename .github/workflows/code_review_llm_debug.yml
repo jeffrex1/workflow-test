@@ -34,6 +34,7 @@ jobs:
           cat changed_files.txt
           echo "files<<EOF" >> $GITHUB_OUTPUT
           cat changed_files.txt >> $GITHUB_OUTPUT
+          cat changed_files.txt
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: print file into console
