@@ -42,6 +42,6 @@ jobs:
         run: |
           echo "${{ steps.files_changed.outputs.files }}" | while IFS= read -r file; do
             echo "--- Reviewing file: $file ---" >> llm_review_output.txt
-            cat "$file"
+            echo "$file"
             cat llm_review_output.txt
           done
