@@ -1,0 +1,42 @@
+name: Code Review with LLM DEBUG
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check_code:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13' # Or your preferred Python version
+
+      - name: Install OpenAI
+        run: |
+          python -m pip install openai
+
+      - name: Look For Changes
+        id: files_changed
+        run: |
+          MERGE_BASE=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+          git diff --name-only "$MERGE_BASE" "${{ github.sha }}" -- '*.py' -- '*.js' -- '*.ts' > changed_files.txt
+          echo "Changed files:"
+          cat changed_files.txt
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          cat changed_files.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: print file into console
+        id: llm_review
+        run: |
+          cat "$file"
